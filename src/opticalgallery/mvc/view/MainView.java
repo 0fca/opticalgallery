@@ -4,9 +4,12 @@
  * and open the template in the editor.
  */
 package opticalgallery.mvc.view;
+import galleries.GalleryType;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.Component;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 
 /**
@@ -14,8 +17,7 @@ import javax.swing.JButton;
  * @author Lukas
  */
 public class MainView extends javax.swing.JFrame {
-    private int pos = 0;
-    private int lastSelected = 0;
+    
     /**
      * Creates new form MainView
      */
@@ -23,43 +25,6 @@ public class MainView extends javax.swing.JFrame {
         initComponents();
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
-        this.addKeyListener(new KeyListener(){
-            @Override
-            public void keyTyped(KeyEvent ke) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent ke) {
-               lastSelected = pos;
-              
-               switch(ke.getKeyCode()){
-                    case KeyEvent.VK_UP:
-                        pos -= 2;
-                        moveCursor();
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        pos += 2;
-                        moveCursor();
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        pos++;
-                        moveCursor();
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        pos--;
-                        moveCursor();
-                        break;
-                    case KeyEvent.VK_ENTER:
-                        JButton jb = (JButton)MainView.this.jPanel1.getComponent(pos);
-                        jb.doClick();
-                        break;
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent ke) {
-            }
-        });
         prepareView(4);
     }
 
@@ -70,13 +35,17 @@ public class MainView extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("OpticsGallery");
+        setBackground(new java.awt.Color(0, 128, 255));
+        setPreferredSize(new java.awt.Dimension(600, 500));
 
+        jPanel1.setBackground(new java.awt.Color(0, 128, 255));
         jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jPanel1KeyPressed(evt);
             }
         });
-        jPanel1.setLayout(new java.awt.GridLayout(2, 2));
+        jPanel1.setLayout(new java.awt.GridLayout(2, 2, 15, 15));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -90,6 +59,7 @@ public class MainView extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
@@ -98,35 +68,36 @@ public class MainView extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jPanel1KeyPressed
 
-
+    @Override
+    public Component getComponent(int index){
+        return jPanel1.getComponent(index);
+    }
+    
+    
+    @Override
+    public int getComponentCount(){
+       return jPanel1.getComponentCount();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 
-    private void moveCursor() {
-       if(pos >= 0 && pos < jPanel1.getComponentCount()){
-           JButton b = (JButton)jPanel1.getComponent(pos);
-           
-           b.setSelected(true);
-           b.setBackground(Color.yellow);
-           System.out.println(pos);
-           JButton last = (JButton)jPanel1.getComponent(lastSelected);
-           last.setSelected(false);
-           last.setBackground(null);
-           jPanel1.revalidate();
-           jPanel1.updateUI();
-       }else{
-           
-       }
-    }
+    
 
     private void prepareView(int max) {
         for(int i = 0; i < max; i++){
-            JButton jb = new JButton(""+i);
+            JButton jb = new JButton("Gallery"+(i+1));
             jb.setFocusable(true);
             jb.setFocusTraversalKeysEnabled(false);
+            jb.setFont(new java.awt.Font("Arial", 2, 24));
+            jb.setBackground(Color.WHITE);
             jb.addActionListener(ac ->{
-                System.out.println(jb.getText());
+                try {
+                    loadGallery(getGalleryType(jb.getText().toUpperCase()));
+                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             });
             jPanel1.add(jb,i);
         }
@@ -143,5 +114,14 @@ public class MainView extends javax.swing.JFrame {
             case 4:
                 break;
         }
+    }
+
+    private void loadGallery(GalleryType gt) {
+        System.out.println(gt);
+    }
+
+    private GalleryType getGalleryType(String text) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+       Field fd = GalleryType.class.getDeclaredField(text);
+       return (GalleryType)fd.get(null);
     }
 }
