@@ -10,8 +10,9 @@ package galleries;
  * @author Lukas
  */
 public final class GlobalConstants {
-    public static final String GALL1 = "/galleries/gallery1";
-    public static final String GALL2 = "/galleries/gallery2";
-    public static final String GALL3 = "/galleries/gallery3";
-    public static final String GALL4 = "/galleries/gallery4";
+    public static final int GALL1 = 2;
+    public static final int GALL2 = 2;
+    public static final int GALL3 = 2;
+    public static final int GALL4 = 0;
+    public static final String IMG_URL = "/galleries/resources/";
 }

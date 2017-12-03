@@ -15,6 +15,14 @@ public enum GalleryType {
     GALLERY3(GlobalConstants.GALL3),
     GALLERY4(GlobalConstants.GALL4);
     
-    GalleryType(String name){}
+    private int count;
+    
+    GalleryType(int count){
+        this.count = count;
+    }
+    
+    public int getCount(){
+        return count;
+    }
     
 }

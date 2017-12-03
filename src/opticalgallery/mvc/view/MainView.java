@@ -5,27 +5,39 @@
  */
 package opticalgallery.mvc.view;
 import galleries.GalleryType;
+import galleries.GlobalConstants;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import opticalgallery.mvc.model.GalleryDataModel;
 
 /**
  *
- * @author Lukas
+ * @author Obsidiam
  */
 public class MainView extends javax.swing.JFrame {
     
     /**
      * Creates new form MainView
      */
+    private GalleryDataModel gdm;
+    
     public MainView() {
         initComponents();
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
-        prepareView(4);
+        prepareView(4,false);
     }
 
     @SuppressWarnings("unchecked")
@@ -85,43 +97,58 @@ public class MainView extends javax.swing.JFrame {
 
     
 
-    private void prepareView(int max) {
-        for(int i = 0; i < max; i++){
-            JButton jb = new JButton("Gallery"+(i+1));
-            jb.setFocusable(true);
-            jb.setFocusTraversalKeysEnabled(false);
-            jb.setFont(new java.awt.Font("Arial", 2, 24));
-            jb.setBackground(Color.WHITE);
-            jb.addActionListener(ac ->{
-                try {
-                    loadGallery(getGalleryType(jb.getText().toUpperCase()));
-                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-            jPanel1.add(jb,i);
+    private void prepareView(int max,boolean fromImages) {
+        if(!fromImages){
+            for(int i = 0; i < max; i++){
+                JButton jb = new JButton("Gallery"+(i+1));
+                jb.setFocusable(true);
+                jb.setFocusTraversalKeysEnabled(false);
+                jb.setFont(new java.awt.Font("Arial", 2, 24));
+                jb.setBackground(Color.WHITE);
+                jb.addActionListener(ac ->{
+                    try {
+                        loadGallery(getGalleryType(jb.getText().toUpperCase()));
+                        viewGallery();
+                    } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | IOException ex) {
+                        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                jPanel1.add(jb,i);
+            }
+        }else{
+            for(int i = 0; i <gdm.getCount(); i++){
+                JButton jb = new JButton();
+                jb.setIcon(new ImageIcon(gdm.getImageAt(i)));
+                jPanel1.add(jb);
+            }
         }
     }
     
-    private void viewGallery(int num){
-        switch(num){
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
+    private void viewGallery(){
+       if(gdm.getCount() > 0){
+           jPanel1.removeAll();
+           jPanel1.revalidate();
+           jPanel1.updateUI();
+
+           prepareView(gdm.getCount(),true);
+       }
+    }
+
+    private void loadGallery(GalleryType gt) throws IOException {
+        List<Image> images = new ArrayList<>();
+        if(gt.getCount() > 0){
+            for(int i = 0; i < gt.getCount(); i++){
+               System.out.println(GlobalConstants.IMG_URL+gt.name().toLowerCase()+"-"+(i+1)+".jpg");
+               InputStream is =  getClass().getResourceAsStream(GlobalConstants.IMG_URL+gt.name().toLowerCase()+"-"+i+".jpg");
+               BufferedImage bf = ImageIO.read(is);
+               images.add(bf.getSubimage(0, 0, bf.getWidth()/292 * 100, bf.getHeight()/200 * 100));
+            }
+            gdm = new GalleryDataModel(images);
         }
     }
-
-    private void loadGallery(GalleryType gt) {
-        System.out.println(gt);
-    }
-
     private GalleryType getGalleryType(String text) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
        Field fd = GalleryType.class.getDeclaredField(text);
        return (GalleryType)fd.get(null);
     }
+    
 }
