@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package opticalgallery.mvc.view;
+import java.awt.Color;
 import opticalgallery.galleries.GalleryType;
 import opticalgallery.galleries.GlobalConstants;
 import java.awt.Component;
@@ -272,6 +273,7 @@ public class MainView extends javax.swing.JFrame {
     
 
     private void prepareView(int max,boolean fromImages) {
+        clearView();
         if(!fromImages){
             for(int i = 0; i < max; i++){
                 JButton jb = new JButton("Gallery"+(i+1));
@@ -279,6 +281,9 @@ public class MainView extends javax.swing.JFrame {
                 jb.setFocusTraversalKeysEnabled(false);
                 jb.setFont(new java.awt.Font("Arial", 2, 24));
                 jb.setBackground(null);
+                if(i == 0){
+                    jb.setBackground(Color.WHITE);
+                }
                 jb.addActionListener(ac ->{
                     try {
                         loadGallery(getGalleryType(jb.getText().toUpperCase()));

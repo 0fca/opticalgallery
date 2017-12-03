@@ -35,8 +35,6 @@ public final class MainViewController {
     }
 
     private void prepare() {
-        
-        
         MV.addKeyListener(new KeyListener(){
             @Override
             public void keyTyped(KeyEvent ke) {
