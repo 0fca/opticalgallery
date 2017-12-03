@@ -116,11 +116,11 @@ public final class MainViewController {
            JButton b = (JButton)MV.getComponent(pos);
            b.setSelected(true);
            b.setBackground(Color.WHITE);
-           //System.out.println(pos);
-           
            JButton last = (JButton)MV.getComponent(lastSelected);
-           last.setSelected(false);
-           last.setBackground(null);
+           if(last != null){
+               last.setSelected(false);
+               last.setBackground(null);
+           }
            MV.revalidate();
     }
     

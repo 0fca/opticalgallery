@@ -6,21 +6,25 @@
 package opticalgallery.mvc.view;
 import opticalgallery.galleries.GalleryType;
 import opticalgallery.galleries.GlobalConstants;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.layout.Border;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JViewport;
 import opticalgallery.mvc.model.GalleryDataModel;
 
@@ -47,6 +51,7 @@ public class MainView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFileChooser1 = new javax.swing.JFileChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -59,6 +64,8 @@ public class MainView extends javax.swing.JFrame {
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+
+        jFileChooser1.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("OpticsGallery");
@@ -77,6 +84,11 @@ public class MainView extends javax.swing.JFrame {
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem1.setText("Open...");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem1);
 
         jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
@@ -166,7 +178,6 @@ public class MainView extends javax.swing.JFrame {
             // TODO add your handling code here:
             loadGallery(GalleryType.GALLERY1);
             prepareView(gdm.getCount(),true);
-            viewGallery();
         } catch (IOException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -178,7 +189,6 @@ public class MainView extends javax.swing.JFrame {
             // TODO add your handling code here:
             loadGallery(GalleryType.GALLERY2);
             prepareView(gdm.getCount(),true);
-            viewGallery();
         } catch (IOException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -190,7 +200,6 @@ public class MainView extends javax.swing.JFrame {
             // TODO add your handling code here:
             loadGallery(GalleryType.GALLERY3);
             prepareView(gdm.getCount(),true);
-            viewGallery();
         } catch (IOException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -202,7 +211,6 @@ public class MainView extends javax.swing.JFrame {
             // TODO add your handling code here:
             loadGallery(GalleryType.GALLERY4);
             prepareView(gdm.getCount(),true);
-            viewGallery();
         } catch (IOException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -211,7 +219,28 @@ public class MainView extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         // TODO add your handling code here:
         clearView();
+        prepareView(4,false);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        jFileChooser1.setCurrentDirectory(new java.io.File("."));
+        jFileChooser1.setDialogTitle("Choose directory to be listed");
+        jFileChooser1.setAcceptAllFileFilterUsed(false);
+        
+        if(jFileChooser1.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+            File selectedFile = jFileChooser1.getSelectedFile();
+            if(selectedFile != null){
+                try {
+                    System.out.println(selectedFile);
+                    loadGalleryFromAbsolute(Arrays.asList(Files.list(selectedFile.toPath()).toArray()));
+                    prepareView(gdm.getCount(), true);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     @Override
     public Component getComponent(int index){
@@ -225,6 +254,7 @@ public class MainView extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -248,11 +278,12 @@ public class MainView extends javax.swing.JFrame {
                 jb.setFocusable(true);
                 jb.setFocusTraversalKeysEnabled(false);
                 jb.setFont(new java.awt.Font("Arial", 2, 24));
-                jb.setBackground(Color.WHITE);
+                jb.setBackground(null);
                 jb.addActionListener(ac ->{
                     try {
                         loadGallery(getGalleryType(jb.getText().toUpperCase()));
-                        viewGallery();
+                        clearView();
+                        prepareView(gdm.getCount(),true);
                     } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | IOException ex) {
                         Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -265,18 +296,11 @@ public class MainView extends javax.swing.JFrame {
                 jb.setIcon(new ImageIcon(gdm.getImageAt(i)));
                 jb.setBackground(null);
                 jb.setBorder(null);
-                jPanel1.add(jb);
+                jPanel1.add(jb,i);
             }
         }
-    }
-    
-    private void viewGallery(){
-        if(gdm != null){
-           if(gdm.getCount() > 0){
-               clearView();
-               prepareView(gdm.getCount(),true);
-           }
-        }
+        jPanel1.revalidate();
+        jPanel1.updateUI();
     }
 
     private void loadGallery(GalleryType gt) throws IOException {
@@ -291,6 +315,21 @@ public class MainView extends javax.swing.JFrame {
             gdm = new GalleryDataModel(images);
         }
     }
+    
+    private void loadGalleryFromAbsolute(List paths){
+        final List<Image> images = new ArrayList<>();
+        paths.forEach(path ->{
+            try {
+                images.add(ImageIO.read(((Path)path).toFile()));
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        gdm = new GalleryDataModel(images);
+    }
+    
     private GalleryType getGalleryType(String text) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
        Field fd = GalleryType.class.getDeclaredField(text);
        return (GalleryType)fd.get(null);
