@@ -4,8 +4,8 @@
  * and open the template in the editor.
  */
 package opticalgallery.mvc.view;
-import galleries.GalleryType;
-import galleries.GlobalConstants;
+import opticalgallery.galleries.GalleryType;
+import opticalgallery.galleries.GlobalConstants;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Image;
@@ -125,20 +125,21 @@ public class MainView extends javax.swing.JFrame {
     }
     
     private void viewGallery(){
-       if(gdm.getCount() > 0){
-           jPanel1.removeAll();
-           jPanel1.revalidate();
-           jPanel1.updateUI();
+        if(gdm != null){
+           if(gdm.getCount() > 0){
+               jPanel1.removeAll();
+               jPanel1.revalidate();
+               jPanel1.updateUI();
 
-           prepareView(gdm.getCount(),true);
-       }
+               prepareView(gdm.getCount(),true);
+           }
+        }
     }
 
     private void loadGallery(GalleryType gt) throws IOException {
         List<Image> images = new ArrayList<>();
         if(gt.getCount() > 0){
             for(int i = 0; i < gt.getCount(); i++){
-               System.out.println(GlobalConstants.IMG_URL+gt.name().toLowerCase()+"-"+(i+1)+".jpg");
                InputStream is =  getClass().getResourceAsStream(GlobalConstants.IMG_URL+gt.name().toLowerCase()+"-"+i+".jpg");
                BufferedImage bf = ImageIO.read(is);
                images.add(bf.getSubimage(0, 0, bf.getWidth()/292 * 100, bf.getHeight()/200 * 100));
@@ -150,5 +151,4 @@ public class MainView extends javax.swing.JFrame {
        Field fd = GalleryType.class.getDeclaredField(text);
        return (GalleryType)fd.get(null);
     }
-    
 }

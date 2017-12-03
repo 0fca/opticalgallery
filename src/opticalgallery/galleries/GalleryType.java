@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package galleries;
+package opticalgallery.galleries;
 
 /**
  *
@@ -15,7 +15,7 @@ public enum GalleryType {
     GALLERY3(GlobalConstants.GALL3),
     GALLERY4(GlobalConstants.GALL4);
     
-    private int count;
+    private final int count;
     
     GalleryType(int count){
         this.count = count;
