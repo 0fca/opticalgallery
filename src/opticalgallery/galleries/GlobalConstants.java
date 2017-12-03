@@ -14,5 +14,5 @@ public final class GlobalConstants {
     public static final int GALL2 = 2;
     public static final int GALL3 = 2;
     public static final int GALL4 = 0;
-    public static final String IMG_URL = "opticalgallery/galleries/resources/";
+    public static final String IMG_URL = "/opticalgallery/galleries/resources/";
 }

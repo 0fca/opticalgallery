@@ -22,7 +22,7 @@ public class OpticalGallery {
      */
     public static void main(String[] args) {
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Windows".equals(info.getName())) {
+            if ("Metal".equals(info.getName())) {
                 try {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                 } catch (InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException | ClassNotFoundException ex) {

@@ -5,6 +5,7 @@
  */
 package opticalgallery.mvc.controller;
 
+import java.awt.Color;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
@@ -92,6 +93,16 @@ public final class MainViewController {
                         }
                         break;
                 }
+               
+               if(ke.getExtendedKeyCode() == KeyEvent.VK_F1
+                ||ke.getExtendedKeyCode() == KeyEvent.VK_F2
+                ||ke.getExtendedKeyCode() == KeyEvent.VK_F3
+                ||ke.getExtendedKeyCode() == KeyEvent.VK_F4){
+                   JButton jb = ((JButton)MV.getComponent(ke.getExtendedKeyCode() - 112));
+                   if(jb != null){
+                        jb.doClick();
+                   }
+               }
             }
 
             @Override
@@ -104,12 +115,12 @@ public final class MainViewController {
     private void moveCursor() {
            JButton b = (JButton)MV.getComponent(pos);
            b.setSelected(true);
-           //b.setBackground(Color.GRAY);
+           b.setBackground(Color.WHITE);
            //System.out.println(pos);
            
            JButton last = (JButton)MV.getComponent(lastSelected);
            last.setSelected(false);
-          //last.setBackground(Color.WHITE);
+           last.setBackground(null);
            MV.revalidate();
     }
     
