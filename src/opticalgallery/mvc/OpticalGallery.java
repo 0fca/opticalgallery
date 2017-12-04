@@ -13,7 +13,7 @@ import opticalgallery.mvc.view.MainView;
 
 /**
  *
- * @author Lukas
+ * @author Obsidiam
  */
 public class OpticalGallery {
 

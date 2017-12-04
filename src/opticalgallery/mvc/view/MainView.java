@@ -4,11 +4,15 @@
  * and open the template in the editor.
  */
 package opticalgallery.mvc.view;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import opticalgallery.galleries.GalleryType;
 import opticalgallery.galleries.GlobalConstants;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.LayoutManager;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,13 +42,16 @@ public class MainView extends javax.swing.JFrame {
     /**
      * Creates new form MainView
      */
+    private ImageView iv = new ImageView();
     private GalleryDataModel gdm;
+    private int offset;
+    
     
     public MainView() {
         initComponents();
         setFocusable(true);
-        setFocusTraversalKeysEnabled(false);
         prepareView(4,false);
+        //Toolkit.getDefaultToolkit().setDynamicLayout(true);
         //System.out.print(getClass().getResource("/opticalgallery/galleries/resources/gallery1-1.jpg"));
     }
 
@@ -72,12 +79,12 @@ public class MainView extends javax.swing.JFrame {
         setTitle("OpticsGallery");
         setBackground(new java.awt.Color(0, 128, 255));
         setPreferredSize(new java.awt.Dimension(600, 500));
+        setSize((int)(Toolkit.getDefaultToolkit().getScreenSize().width * 0.75), (int)(Toolkit.getDefaultToolkit().getScreenSize().height * 0.75));
 
         JViewport jv = new JViewport();
         jv.setView(jPanel1);
         jv.setViewSize(jPanel1.getSize());
 
-        jPanel1.setBackground(new java.awt.Color(0, 128, 255));
         jPanel1.setLayout(new java.awt.GridLayout(2, 2, 15, 15));
         jScrollPane1.setViewportView(jPanel1);
 
@@ -177,6 +184,7 @@ public class MainView extends javax.swing.JFrame {
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         try {
             // TODO add your handling code here:
+            resetView();
             loadGallery(GalleryType.GALLERY1);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -188,6 +196,7 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             // TODO add your handling code here:
+            resetView();
             loadGallery(GalleryType.GALLERY2);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -199,6 +208,7 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             // TODO add your handling code here:
+            resetView();
             loadGallery(GalleryType.GALLERY3);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -210,6 +220,7 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             // TODO add your handling code here:
+            resetView();
             loadGallery(GalleryType.GALLERY4);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -243,6 +254,11 @@ public class MainView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    @Override
+    public LayoutManager getLayout(){
+        return jPanel1.getLayout();
+    }
+    
     @Override
     public Component getComponent(int index){
         return jPanel1.getComponentCount() > index ? jPanel1.getComponent(index): null;
@@ -281,10 +297,14 @@ public class MainView extends javax.swing.JFrame {
                 jb.setFocusTraversalKeysEnabled(false);
                 jb.setFont(new java.awt.Font("Arial", 2, 24));
                 jb.setBackground(null);
+                jb.setName(String.valueOf(i));
                 if(i == 0){
                     jb.setBackground(Color.WHITE);
                 }
+                
                 jb.addActionListener(ac ->{
+                    offset = Integer.parseInt(jb.getName());
+                    iv.setOffset(offset + 1);
                     try {
                         loadGallery(getGalleryType(jb.getText().toUpperCase()));
                         clearView();
@@ -296,11 +316,21 @@ public class MainView extends javax.swing.JFrame {
                 jPanel1.add(jb,i);
             }
         }else{
-            for(int i = 0; i <gdm.getCount(); i++){
+            for(int i = 0; i < gdm.getCount(); i++){
                 JButton jb = new JButton();
                 jb.setIcon(new ImageIcon(gdm.getImageAt(i)));
-                jb.setBackground(null);
+                //jb.setBackground(null);
                 jb.setBorder(null);
+                jb.setName(String.valueOf(i));
+                jb.addActionListener(listener ->{
+                    iv.setOffset(offset + 1);
+                    clearView();
+                    switchLayouts();
+                    jPanel1.add(iv,"Center");
+                    iv.viewAt(Integer.parseInt(jb.getName()));
+                    jPanel1.revalidate();
+                    jPanel1.updateUI();
+                });
                 jPanel1.add(jb,i);
             }
         }
@@ -315,9 +345,10 @@ public class MainView extends javax.swing.JFrame {
                InputStream is = getClass().getResourceAsStream(GlobalConstants.IMG_URL+gt.name().toLowerCase()+"-"+(i+1)+".jpg");
                BufferedImage bf = ImageIO.read(is);
                System.out.println(bf.getWidth());
-               images.add(bf.getSubimage(0, 0, (int)(bf.getWidth()), (int)(bf.getHeight())));
+               images.add(bf.getScaledInstance((int)(jPanel1.getWidth() * 0.35), (int)(jPanel1.getHeight() * 0.35), Image.SCALE_SMOOTH));
             }
             gdm = new GalleryDataModel(images);
+            iv.setDataModel(gdm);
         }
     }
     
@@ -325,7 +356,7 @@ public class MainView extends javax.swing.JFrame {
         final List<Image> images = new ArrayList<>();
         paths.forEach(path ->{
             try {
-                images.add(ImageIO.read(((Path)path).toFile()));
+                images.add(ImageIO.read(((Path)path).toFile()).getScaledInstance((int)(jPanel1.getWidth() * 0.35), (int)(jPanel1.getHeight() * 0.35), Image.SCALE_SMOOTH));
             } catch (MalformedURLException ex) {
                 Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -333,6 +364,7 @@ public class MainView extends javax.swing.JFrame {
             }
         });
         gdm = new GalleryDataModel(images);
+        iv.setDataModel(gdm);
     }
     
     private GalleryType getGalleryType(String text) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -344,5 +376,28 @@ public class MainView extends javax.swing.JFrame {
         jPanel1.removeAll();
         jPanel1.revalidate();
         jPanel1.updateUI();
+    }
+
+    private void switchLayouts() {
+        if(jPanel1.getLayout() instanceof GridLayout){
+            jPanel1.setLayout(new BorderLayout());
+        }else{
+            GridLayout layout = new GridLayout();
+            layout.setColumns(2);
+            layout.setRows(2);
+            layout.setVgap(15);
+            layout.setHgap(15);
+            jPanel1.setLayout(layout);
+        }
+    }
+
+    public ImageView getImageView(){
+        return iv;
+    }
+    
+    public void resetView(){
+        clearView();
+        switchLayouts();
+        prepareView(gdm.getCount(),true);
     }
 }
