@@ -13,6 +13,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +32,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JViewport;
 import opticalgallery.mvc.model.GalleryDataModel;
 
@@ -44,13 +47,13 @@ public class MainView extends javax.swing.JFrame {
      */
     private ImageView iv = new ImageView();
     private GalleryDataModel gdm;
-    private int offset;
-    
+    private int state = 0;
     
     public MainView() {
         initComponents();
         setFocusable(true);
         prepareView(4,false);
+        
         //Toolkit.getDefaultToolkit().setDynamicLayout(true);
         //System.out.print(getClass().getResource("/opticalgallery/galleries/resources/gallery1-1.jpg"));
     }
@@ -67,11 +70,13 @@ public class MainView extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
 
         jFileChooser1.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
@@ -112,15 +117,6 @@ public class MainView extends javax.swing.JFrame {
 
         jMenu2.setText("Gallery view");
 
-        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, 0));
-        jMenuItem4.setText("Clear");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem4);
-
         jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_1, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem5.setText("Gallery 1");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
@@ -159,6 +155,26 @@ public class MainView extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
+        jMenu3.setText("About");
+
+        jMenuItem2.setText("About an app");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem2);
+
+        jMenuItem4.setText("Website");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem4);
+
+        jMenuBar1.add(jMenu3);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -184,7 +200,7 @@ public class MainView extends javax.swing.JFrame {
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         try {
             // TODO add your handling code here:
-            resetView();
+            resetView(false);
             loadGallery(GalleryType.GALLERY1);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -196,7 +212,7 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             // TODO add your handling code here:
-            resetView();
+            resetView(false);
             loadGallery(GalleryType.GALLERY2);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -208,7 +224,7 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             // TODO add your handling code here:
-            resetView();
+            resetView(false);
             loadGallery(GalleryType.GALLERY3);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
@@ -220,19 +236,13 @@ public class MainView extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             // TODO add your handling code here:
-            resetView();
+            resetView(false);
             loadGallery(GalleryType.GALLERY4);
             prepareView(gdm.getCount(),true);
         } catch (IOException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItem8ActionPerformed
-
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        // TODO add your handling code here:
-        clearView();
-        prepareView(4,false);
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
@@ -254,9 +264,23 @@ public class MainView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "OpticalGallery by Obsidiam v1.0b6\nProgram is licensed under GPL3.0\nYou can use the code or redistribute it under the mentioned license.", "About", JOptionPane.DEFAULT_OPTION);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
     @Override
     public LayoutManager getLayout(){
         return jPanel1.getLayout();
+    }
+    
+    public int getColumnCount(){
+        return ((this.getLayout() instanceof GridLayout) ? ((GridLayout)(this.getLayout())).getColumns() : 1);
     }
     
     @Override
@@ -274,8 +298,10 @@ public class MainView extends javax.swing.JFrame {
     private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
@@ -303,8 +329,6 @@ public class MainView extends javax.swing.JFrame {
                 }
                 
                 jb.addActionListener(ac ->{
-                    offset = Integer.parseInt(jb.getName());
-                    iv.setOffset(offset + 1);
                     try {
                         loadGallery(getGalleryType(jb.getText().toUpperCase()));
                         clearView();
@@ -316,22 +340,24 @@ public class MainView extends javax.swing.JFrame {
                 jPanel1.add(jb,i);
             }
         }else{
-            for(int i = 0; i < gdm.getCount(); i++){
-                JButton jb = new JButton();
-                jb.setIcon(new ImageIcon(gdm.getImageAt(i)));
-                //jb.setBackground(null);
-                jb.setBorder(null);
-                jb.setName(String.valueOf(i));
-                jb.addActionListener(listener ->{
-                    iv.setOffset(offset + 1);
-                    clearView();
-                    switchLayouts();
-                    jPanel1.add(iv,"Center");
-                    iv.viewAt(Integer.parseInt(jb.getName()));
-                    jPanel1.revalidate();
-                    jPanel1.updateUI();
-                });
-                jPanel1.add(jb,i);
+            if(gdm != null){
+                for(int i = 0; i < gdm.getCount(); i++){
+                    JButton jb = new JButton();
+                    jb.setIcon(new ImageIcon(gdm.getImageAt(i)));
+                    //jb.setBackground(null);
+                    jb.setBorder(null);
+                    jb.setName(String.valueOf(i));
+                    jb.addActionListener(listener ->{
+                        clearView();
+                        switchLayouts(new BorderLayout());
+                        jPanel1.add(iv,"Center");
+                        iv.viewAt(Integer.parseInt(jb.getName()));
+                        jPanel1.revalidate();
+                        jPanel1.updateUI();
+                        state = 2;
+                    });
+                    jPanel1.add(jb,i);
+                }
             }
         }
         jPanel1.revalidate();
@@ -340,15 +366,16 @@ public class MainView extends javax.swing.JFrame {
 
     private void loadGallery(GalleryType gt) throws IOException {
         List<Image> images = new ArrayList<>();
+        
         if(gt.getCount() > 0){
             for(int i = 0; i < gt.getCount(); i++){
                InputStream is = getClass().getResourceAsStream(GlobalConstants.IMG_URL+gt.name().toLowerCase()+"-"+(i+1)+".jpg");
                BufferedImage bf = ImageIO.read(is);
-               System.out.println(bf.getWidth());
-               images.add(bf.getScaledInstance((int)(jPanel1.getWidth() * 0.35), (int)(jPanel1.getHeight() * 0.35), Image.SCALE_SMOOTH));
+               images.add(bf.getScaledInstance((int)(getWidth() * 0.35), (int)(getHeight() * 0.35), Image.SCALE_SMOOTH));
             }
             gdm = new GalleryDataModel(images);
             iv.setDataModel(gdm);
+            state = 1;
         }
     }
     
@@ -356,7 +383,7 @@ public class MainView extends javax.swing.JFrame {
         final List<Image> images = new ArrayList<>();
         paths.forEach(path ->{
             try {
-                images.add(ImageIO.read(((Path)path).toFile()).getScaledInstance((int)(jPanel1.getWidth() * 0.35), (int)(jPanel1.getHeight() * 0.35), Image.SCALE_SMOOTH));
+                images.add(ImageIO.read(((Path)path).toFile()).getScaledInstance((int)(getWidth() * 0.35), (int)(getHeight() * 0.35), Image.SCALE_SMOOTH));
             } catch (MalformedURLException ex) {
                 Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -365,6 +392,7 @@ public class MainView extends javax.swing.JFrame {
         });
         gdm = new GalleryDataModel(images);
         iv.setDataModel(gdm);
+        state = 1;
     }
     
     private GalleryType getGalleryType(String text) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -378,26 +406,22 @@ public class MainView extends javax.swing.JFrame {
         jPanel1.updateUI();
     }
 
-    private void switchLayouts() {
-        if(jPanel1.getLayout() instanceof GridLayout){
-            jPanel1.setLayout(new BorderLayout());
-        }else{
-            GridLayout layout = new GridLayout();
-            layout.setColumns(2);
-            layout.setRows(2);
-            layout.setVgap(15);
-            layout.setHgap(15);
-            jPanel1.setLayout(layout);
-        }
+    private void switchLayouts(LayoutManager lm) {
+        jPanel1.setLayout(lm);
     }
 
     public ImageView getImageView(){
         return iv;
     }
     
-    public void resetView(){
+    public void resetView(boolean full){
         clearView();
-        switchLayouts();
-        prepareView(gdm.getCount(),true);
+        GridLayout layout = new GridLayout();
+        layout.setColumns(2);
+        layout.setRows(2);
+        layout.setVgap(15);
+        layout.setHgap(15);
+        switchLayouts(layout);
+        prepareView(gdm == null && full ? 4 : gdm.getCount(), full);
     }
 }

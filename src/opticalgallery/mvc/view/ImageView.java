@@ -6,12 +6,12 @@
 package opticalgallery.mvc.view;
 
 import java.awt.BorderLayout;
+
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import javax.swing.JPanel;
 import java.util.*;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import opticalgallery.mvc.model.GalleryDataModel;
 
 /**
@@ -25,7 +25,7 @@ public class ImageView extends JPanel{
     
     private int shown = 0, offset = 0;
     private GalleryDataModel gdm;
-    private List<ImageObject> imageObj = new ArrayList<>();
+    private List<Image> imageObj = new ArrayList<>();
     
     public void setDataModel(GalleryDataModel mdl){
         this.gdm = mdl;
@@ -33,11 +33,12 @@ public class ImageView extends JPanel{
     }
     
     private void view(){
-        if(shown < imageObj.size()){
             this.removeAll();
-            this.add(imageObj.get((shown + offset) * shown));
+            Image selected = imageObj.get(shown);
+            ImageObject imo = new ImageObject(selected);
+            imo.setIndex(gdm.getImages().indexOf(imageObj.indexOf(selected)));
+            this.add(imo);
             this.updateUI();
-        }
     }
     
     public void viewAt(int index){
@@ -67,20 +68,20 @@ public class ImageView extends JPanel{
     }
 
     private void prepare() {
-        gdm.getImages().forEach(image ->{
-            ImageObject imo = new ImageObject();
-            imo.setImgSize(image.getWidth(imo), image.getHeight(imo));
-            imo.setIndex(gdm.getImages().indexOf(image));
-            imo.setIcon(new ImageIcon(image));
-            imo.setHorizontalAlignment(SwingConstants.CENTER);
-           
-            imageObj.add(imo);
+        imageObj.clear();
+        gdm.getImages().forEach(image ->{ 
+            imageObj.add(image);
         });
     }
-    
 
-    private class ImageObject extends JLabel{
+    private class ImageObject extends JPanel{
         private int index,x,y;
+        private Image img;
+        
+        private ImageObject(Image img){
+            this.img = img;
+            
+        }
         
         public void setIndex(int index){
             this.index = index;
@@ -101,6 +102,15 @@ public class ImageView extends JPanel{
         
         public ImageView getImageView(){
             return ImageView.this;
+        }
+        
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            img = img.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH);
+            g.drawImage(img, 0, 0, img.getWidth(this), img.getHeight(this), this);
+            this.revalidate();
+            this.updateUI();
         }
     }
     

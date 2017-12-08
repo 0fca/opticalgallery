@@ -6,10 +6,10 @@
 package opticalgallery.mvc.controller;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JButton;
@@ -23,7 +23,7 @@ public final class MainViewController {
     private static final MainView MV = new MainView();
     
     private int pos = 0;
-    private int lastSelected = 0;
+    private int lastSelected = 0, columnCount = 1;
     static final GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
     private MainViewController(){}
     
@@ -34,7 +34,7 @@ public final class MainViewController {
     public void view(){
         prepare();
         MV.setVisible(true);
-        
+        columnCount = MV.getColumnCount();
     }
 
     private void prepare() {
@@ -50,16 +50,16 @@ public final class MainViewController {
 
                    switch(ke.getKeyCode()){
                         case KeyEvent.VK_UP:
-                            if(pos - 2 > 0){
-                                pos -= 2;
+                            if(pos - columnCount > 0){
+                                pos -= columnCount;
                             }else{
                                 pos = 0;
                             }
                             moveCursor();
                             break;
                         case KeyEvent.VK_DOWN:
-                            if(pos + 2 < MV.getComponentCount()){
-                                pos += 2;
+                            if(pos + columnCount < MV.getComponentCount()){
+                                pos += columnCount;
                             }else{
                                 pos = 0;
                             }
@@ -79,6 +79,7 @@ public final class MainViewController {
                                 pos--;
                             }else{
                                 pos = MV.getComponentCount() - 1;
+                                
                             }
                             moveCursor();
                             break;
@@ -95,16 +96,6 @@ public final class MainViewController {
                             }
                             break;
                     }
-
-                   if(ke.getExtendedKeyCode() == KeyEvent.VK_1
-                    ||ke.getExtendedKeyCode() == KeyEvent.VK_2
-                    ||ke.getExtendedKeyCode() == KeyEvent.VK_3
-                    ||ke.getExtendedKeyCode() == KeyEvent.VK_4){
-                       JButton jb = ((JButton)MV.getComponent(ke.getExtendedKeyCode() - 49));
-                       if(jb != null){
-                            jb.doClick();
-                       }
-                   }
                 }else{
                     switch(ke.getExtendedKeyCode()){
                         case KeyEvent.VK_ESCAPE:
@@ -115,9 +106,11 @@ public final class MainViewController {
                                 device.setFullScreenWindow(MV);
                             }
                             break;
-                        case KeyEvent.VK_E:
+                        case KeyEvent.VK_C:
                             if(ke.isControlDown()){
-                                MV.resetView();
+                                MV.resetView(true);
+                            }else{
+                                MV.resetView(false);
                             }
                             break;
                         case KeyEvent.VK_RIGHT:
@@ -127,18 +120,35 @@ public final class MainViewController {
                             MV.getImageView().viewPrevious();
                             break;
                     }
-                    
-                    if(ke.getExtendedKeyCode() == KeyEvent.VK_1
-                    ||ke.getExtendedKeyCode() == KeyEvent.VK_2
-                    ||ke.getExtendedKeyCode() == KeyEvent.VK_3
-                    ||ke.getExtendedKeyCode() == KeyEvent.VK_4){
-                       MV.getImageView().viewAt((int)((char)ke.getExtendedKeyCode()));
-                   }
                 }
+                changeImage(ke.getExtendedKeyCode());
             }
 
             @Override
-            public void keyReleased(KeyEvent ke) {
+            public void keyReleased(KeyEvent ke) {}
+
+            private void changeImage(int extendedKeyCode) {
+               if(extendedKeyCode == KeyEvent.VK_1
+                    ||extendedKeyCode == KeyEvent.VK_2
+                    ||extendedKeyCode == KeyEvent.VK_3
+                    ||extendedKeyCode == KeyEvent.VK_4){
+                    if(MV.getComponentCount() > 0){
+                       Component c = MV.getComponent((int)((char)extendedKeyCode - 49));
+                        if(c instanceof JButton){
+                            ((JButton)(c)).doClick();
+                        }
+
+                         //System.out.println("Changing....");
+                        if(device.getFullScreenWindow() == null){
+                           device.setFullScreenWindow(MV);
+
+                           MV.getImageView().viewAt((int)((char)extendedKeyCode - 49));
+                        }else{
+                          //System.out.println("Changing....");
+                           MV.getImageView().viewAt((int)((char)extendedKeyCode - 49));
+                        }
+                    }
+               }
             }
         });
         
@@ -148,8 +158,9 @@ public final class MainViewController {
            JButton b = (JButton)MV.getComponent(pos);
            b.setSelected(true);
            b.setBackground(Color.WHITE);
-           JButton last = (JButton)MV.getComponent(lastSelected);
-           if(last != null){
+           
+           if(lastSelected != pos){
+               JButton last = (JButton)MV.getComponent(lastSelected);
                last.setSelected(false);
                last.setBackground(null);
            }
